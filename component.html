@@ -1,5 +1,5 @@
-<polymer-element name="ceci-button" attributes="textcolor buttoncolor buttonactivecolor label value" value="Click" extends="ceci-element"
-  label="Click Me" textcolor="#ffffff" buttoncolor="#4DB227" buttonactivecolor="#358915">
+<polymer-element name="ceci-button" attributes="textcolor buttoncolor buttonactivecolor disabled buttondisabledcolor label value" value="Click" extends="ceci-element"
+  label="Click Me" textcolor="#ffffff" buttoncolor="#4DB227" buttonactivecolor="#358915" buttondisabledcolor="#358915" disabled="false">
   <ceci-definition>
     {
       "tags": ["button", "click", "tap"],
@@ -17,6 +17,18 @@
         "click": {
           "description": "Causes a fake click event to occur.",
           "label": "Click"
+        },
+        "disable": {
+          "description": "Disables signals from being sent when the button is clicked",
+          "label": "Disable"
+        },
+        "enable": {
+          "description": "Enables signals from being sent when the button is clicked",
+          "label": "Enable"
+        },
+        "toggleDisabled": {
+          "description": "Toggles enable and disable on and off",
+          "label": "Toggle Enable/Disable"
         }
       },
       "attributes": {
@@ -49,6 +61,18 @@
           "description": "Background color of the button while it is being clicked or tapped.",
           "editable": "color",
           "listener": true
+        },
+        "buttondisabledcolor": {
+          "label": "Button Disabled Color",
+          "description": "Background color of the button while it is disabled.",
+          "editable": "color",
+          "listener": true
+        },
+        "disabled": {
+          "label": "Disabled status",
+          "description": "Is the button's signal status enabled or disabled.",
+          "editable": "boolean",
+          "listener": true
         }
       }
     }
@@ -60,11 +84,15 @@
   </template>
   <script>
     Polymer('ceci-button', {
+      disabled: false,
       ready: function () {
         this.super();
 
         var that = this;
         this.$.button.addEventListener('mousedown', function (e) {
+          if (that.disabled) {
+            return;
+          }
           var valueBefore = that.buttoncolor;
           if (that.buttonactivecolor) {
             that.$.button.style.backgroundColor = that.buttonactivecolor;
@@ -75,7 +103,27 @@
         }, false);
       },
       click: function () {
-        this.broadcast('click', this.getAttribute('value'));
+        if (!this.disabled) {
+          this.broadcast('click', this.getAttribute('value'));
+        }
+      },
+      disable: function () {
+        this.disabled = true;
+      },
+      enable: function () {
+        this.disabled = false;
+      },
+      toggleDisabled: function () {
+        this.disabled = !this.disabled;
+      },
+      disabledChanged: function() {
+        if (this.disabled) {
+          this.shadowRoot.querySelector("#button").classList.add("disabled");
+          this.$.button.style.backgroundColor = this.buttondisabledcolor;
+        } else {
+          this.shadowRoot.querySelector("#button").classList.remove("disabled");
+          this.$.button.style.backgroundColor = this.buttoncolor;
+        }
       },
       textcolorChanged: function (oldValue, newValue) {
         this.$.button.style.color = newValue;

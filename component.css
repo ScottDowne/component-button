@@ -31,3 +31,14 @@
   border: none;
 }
 
+:host button.disabled {
+  cursor: not-allowed;
+}
+
+:host button.disabled:active {
+  padding-top: 5px;
+  padding-bottom: 3px;
+  padding-left: 0;
+  padding-right: 0;
+}
+
