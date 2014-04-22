@@ -89,18 +89,20 @@
         this.super();
 
         var that = this;
-        this.$.button.addEventListener('mousedown', function (e) {
+        function onMouseDown() {
           if (that.disabled) {
             return;
           }
-          var valueBefore = that.buttoncolor;
           if (that.buttonactivecolor) {
             that.$.button.style.backgroundColor = that.buttonactivecolor;
-            window.addEventListener('mouseup', function (e) {
-              that.$.button.style.backgroundColor = valueBefore;
-            }, false);
+            window.addEventListener('mouseup', onMouseUp);
           }
-        }, false);
+        }
+        function onMouseUp() {
+          window.removeEventListener('mouseup', onMouseUp);
+          that.$.button.style.backgroundColor = that.buttoncolor;;
+        }
+        this.$.button.addEventListener('mousedown', onMouseDown);
       },
       click: function () {
         if (!this.disabled) {
